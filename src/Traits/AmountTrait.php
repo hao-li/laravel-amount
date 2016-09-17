@@ -26,6 +26,6 @@ trait AmountTrait
 
     public function getAmountFields()
     {
-        return (property_exists($this, 'amountFields')) ? $this->amountFields : null;
+        return (property_exists($this, 'amountFields')) ? $this->amountFields : [];
     }
 }
