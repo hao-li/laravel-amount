@@ -21,10 +21,11 @@ public function setAmountAttribute($value)
 
 ## 原理
 
-将转换逻辑封装在 AmountTrait 中，覆写 Model 类的 setRawAttributes 及 setAttribute 方法，当访问相关字段时自动进行转换处理。
+将转换逻辑封装在 AmountTrait 中，覆写 Model 类的 setRawAttributes, getAttributeValue 及 setAttribute 方法，当访问相关字段时自动进行转换处理。
 
 ```php
 public static $amountTimes = 100;
+private $amountSetFields = [];
 
 public function setRawAttributes(array $attributes, $sync = false)
 {
@@ -39,9 +40,20 @@ public function setRawAttributes(array $attributes, $sync = false)
     parent::setRawAttributes($attributes, $sync);
 }
 
+public function getAttributeValue($key)
+{
+    $value = parent::getAttributeValue($key);
+    if (in_array($key, $this->getAmountFields()) && array_key_exists($key, $this->amountSetFields)) {
+        $value = $value / self::$amountTimes;
+    }
+
+    return $value;
+}
+
 public function setAttribute($key, $value)
 {
     if (in_array($key, $this->getAmountFields())) {
+        $this->amountSetFields[$key] = $value;
         $value = (int)($value * self::$amountTimes);
     }
     parent::setAttribute($key, $value);
@@ -52,7 +64,6 @@ public function getAmountFields()
     return (property_exists($this, 'amountFields')) ? $this->amountFields : [];
 }
 ```
-> 之前考虑覆写 getAttributeValue 方法，不过该方案只有直接访问指定字段才会转换，容易引出问题，所以改为覆写 setRawAttributes。
 
 ## 依赖
 Laravel >= 5.2
