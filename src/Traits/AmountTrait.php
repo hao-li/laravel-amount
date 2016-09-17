@@ -6,14 +6,17 @@ trait AmountTrait
 {
     public static $amountTimes = 100;
 
-    public function getAttributeValue($key)
+    public function setRawAttributes(array $attributes, $sync = false)
     {
-        $value = parent::getAttributeValue($key);
-        if (in_array($key, $this->getAmountFields())) {
-            $value = (int)($value / self::$amountTimes);
+        $amountFields = $this->getAmountFields();
+
+        foreach ($attributes as $attribute => &$value) {
+            if (in_array($attribute, $amountFields)) {
+                $value = $value / self::$amountTimes;
+            }
         }
 
-        return $value;
+        parent::setRawAttributes($attributes, $sync);
     }
 
     public function setAttribute($key, $value)

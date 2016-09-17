@@ -21,19 +21,22 @@ public function setAmountAttribute($value)
 
 ## 原理
 
-将转换逻辑封装在 AmountTrait 中，复写 Model 类的 getAttributeValue 及 setAttribute 方法，当访问相关字段时自动进行转换处理。
+将转换逻辑封装在 AmountTrait 中，覆写 Model 类的 setRawAttributes 及 setAttribute 方法，当访问相关字段时自动进行转换处理。
 
 ```php
 public static $amountTimes = 100;
 
-public function getAttributeValue($key)
+public function setRawAttributes(array $attributes, $sync = false)
 {
-    $value = parent::getAttributeValue($key);
-    if (in_array($key, $this->getAmountFields())) {
-        $value = (int)($value / self::$amountTimes);
+    $amountFields = $this->getAmountFields();
+
+    foreach ($attributes as $attribute => &$value) {
+        if (in_array($attribute, $amountFields)) {
+            $value = $value / self::$amountTimes;
+        }
     }
 
-    return $value;
+    parent::setRawAttributes($attributes, $sync);
 }
 
 public function setAttribute($key, $value)
@@ -49,6 +52,7 @@ public function getAmountFields()
     return (property_exists($this, 'amountFields')) ? $this->amountFields : [];
 }
 ```
+> 之前考虑覆写 getAttributeValue 方法，不过该方案只有直接访问指定字段才会转换，容易引出问题，所以改为覆写 setRawAttributes。
 
 ## 依赖
 Laravel >= 5.2
@@ -81,3 +85,28 @@ composer require "hao-li/laravel-amount:dev-master"
 4. 完成
 
   之后读取 amount 字段时，该字段的内容会自动从数据库的**分**转换为**元**，向其赋值时反之从**元**转换为**分**。
+
+## FAQ
+
+### 和别的 trait 中方法冲突
+
+以 setRawAttributes 为例
+
+1. 将冲突的方法分别重命名
+  ```php
+  use AmountTrait, BTrait {
+      AmountTrait::setRawAttributes as amountTraitSetRawAttributes;
+      BTrait::setRawAttributes as BTraitSetRawAttributes;
+  }
+  ```
+
+2. 在 Model 中定义该冲突的方法，并分别调用别名方法
+  ```php
+  public function setRawAttributes(array $attributes, $sync = false)
+  {
+      $this->BTraitSetRawAttributes($attributes, $sync);
+      $attributes = $this->getAttributes();
+      $this->amountTraitSetRawAttributes($attributes, $sync);
+  }
+  ```
+  > 要注意这里 $attributes 可能已被改变，所以再次使用时要重新取得最新值
