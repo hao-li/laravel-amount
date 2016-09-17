@@ -1,0 +1,16 @@
+{
+    "name": "hao-li/laravel-amount",
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "HaoLi\\LaravelAmount\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "hao li",
+            "email": "haoli.sand@gmail.com"
+        }
+    ]
+}
