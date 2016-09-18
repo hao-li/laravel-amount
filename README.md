@@ -13,7 +13,7 @@ public function getAmountAttribute($value)
 
 public function setAmountAttribute($value)
 {
-    $this->attributes['amount'] = $value * 100;
+    $this->attributes['amount'] = (int)($value * 100);
 }
 ```
 
@@ -99,7 +99,7 @@ composer require "hao-li/laravel-amount:dev-master"
 
 ### 和别的 trait 中方法冲突
 
-以 setRawAttributes 为例（此为之前方案，目前并未覆写此方法，仅为举例，其他函数原理相同）
+以 setRawAttributes 为例（此为之前方案，目前并未覆写此方法，仅为举例，其他方法原理相同）
 
 1. 将冲突的方法分别重命名
   ```php
@@ -109,7 +109,7 @@ composer require "hao-li/laravel-amount:dev-master"
   }
   ```
 
-2. 在 Model 中定义该冲突的方法，并分别调用别名方法
+2. 在 Model 中定义该冲突的方法，根据情况分别调用别名方法
   ```php
   public function setRawAttributes(array $attributes, $sync = false)
   {
@@ -118,4 +118,4 @@ composer require "hao-li/laravel-amount:dev-master"
       $this->amountTraitSetRawAttributes($attributes, $sync);
   }
   ```
-  > 要注意这里 $attributes 可能已被改变，所以再次使用时要重新取得最新值
+  > 注意这里 $attributes 可能已被改变，所以再次使用时要重新取得最新值
