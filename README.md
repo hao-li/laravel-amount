@@ -21,29 +21,28 @@ public function setAmountAttribute($value)
 
 ## 原理
 
-将转换逻辑封装在 AmountTrait 中，覆写 Model 类的 setRawAttributes, getAttributeValue 及 setAttribute 方法，当访问相关字段时自动进行转换处理。
+将转换逻辑封装在 AmountTrait 中，覆写 Model 类的 getMutatedAttributes, mutateAttributeForArray, getAttributeValue 及 setAttribute 方法，当访问相关字段时自动进行转换处理。
 
 ```php
 public static $amountTimes = 100;
-private $amountSetFields = [];
 
-public function setRawAttributes(array $attributes, $sync = false)
+public function getMutatedAttributes()
 {
-    $amountFields = $this->getAmountFields();
+    $attributes = parent::getMutatedAttributes();
+    return array_merge($attributes, $this->getAmountFields());
+}
 
-    foreach ($attributes as $attribute => &$value) {
-        if (in_array($attribute, $amountFields)) {
-            $value = $value / self::$amountTimes;
-        }
-    }
-
-    parent::setRawAttributes($attributes, $sync);
+protected function mutateAttributeForArray($key, $value)
+{
+    return (in_array($key, $this->getAmountFields()))
+        ? $value / self::$amountTimes
+        : parent::mutateAttributeForArray($key, $value);
 }
 
 public function getAttributeValue($key)
 {
     $value = parent::getAttributeValue($key);
-    if (in_array($key, $this->getAmountFields()) && array_key_exists($key, $this->amountSetFields)) {
+    if (in_array($key, $this->getAmountFields())) {
         $value = $value / self::$amountTimes;
     }
 
@@ -53,7 +52,6 @@ public function getAttributeValue($key)
 public function setAttribute($key, $value)
 {
     if (in_array($key, $this->getAmountFields())) {
-        $this->amountSetFields[$key] = $value;
         $value = (int)($value * self::$amountTimes);
     }
     parent::setAttribute($key, $value);
@@ -101,7 +99,7 @@ composer require "hao-li/laravel-amount:dev-master"
 
 ### 和别的 trait 中方法冲突
 
-以 setRawAttributes 为例
+以 setRawAttributes 为例（此为之前方案，目前并未覆写此方法，仅为举例，其他函数原理相同）
 
 1. 将冲突的方法分别重命名
   ```php

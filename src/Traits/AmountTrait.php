@@ -5,25 +5,24 @@ namespace HaoLi\LaravelAmount\Traits;
 trait AmountTrait
 {
     public static $amountTimes = 100;
-    private $amountSetFields = [];
 
-    public function setRawAttributes(array $attributes, $sync = false)
+    public function getMutatedAttributes()
     {
-        $amountFields = $this->getAmountFields();
+        $attributes = parent::getMutatedAttributes();
+        return array_merge($attributes, $this->getAmountFields());
+    }
 
-        foreach ($attributes as $attribute => &$value) {
-            if (in_array($attribute, $amountFields)) {
-                $value = $value / self::$amountTimes;
-            }
-        }
-
-        parent::setRawAttributes($attributes, $sync);
+    protected function mutateAttributeForArray($key, $value)
+    {
+        return (in_array($key, $this->getAmountFields()))
+            ? $value / self::$amountTimes
+            : parent::mutateAttributeForArray($key, $value);
     }
 
     public function getAttributeValue($key)
     {
         $value = parent::getAttributeValue($key);
-        if (in_array($key, $this->getAmountFields()) && array_key_exists($key, $this->amountSetFields)) {
+        if (in_array($key, $this->getAmountFields())) {
             $value = $value / self::$amountTimes;
         }
 
@@ -33,7 +32,6 @@ trait AmountTrait
     public function setAttribute($key, $value)
     {
         if (in_array($key, $this->getAmountFields())) {
-            $this->amountSetFields[$key] = $value;
             $value = (int)($value * self::$amountTimes);
         }
         parent::setAttribute($key, $value);
