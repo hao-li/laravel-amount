@@ -1,5 +1,7 @@
 {
     "name": "hao-li/laravel-amount",
+    "keywords": ["laravel"],
+    "license": "MIT",
     "require": {
     },
     "autoload": {
