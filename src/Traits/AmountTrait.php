@@ -9,6 +9,7 @@ trait AmountTrait
     public function getMutatedAttributes()
     {
         $attributes = parent::getMutatedAttributes();
+
         return array_merge($attributes, $this->getAmountFields());
     }
 
