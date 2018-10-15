@@ -1,4 +1,7 @@
 # laravel-amount
+<a href="https://packagist.org/packages/hao-li/laravel-amount"><img src="https://poser.pugx.org/hao-li/laravel-amount/d/total.svg" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/hao-li/laravel-amount"><img src="https://poser.pugx.org/hao-li/laravel-amount/v/stable.svg" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/hao-li/laravel-amount"><img src="https://poser.pugx.org/hao-li/laravel-amount/license.svg" alt="License"></a>
 
 ## 背景
 系统中涉及到金额的字段，View 层表现的时候一般都是以**元**为单位使用小数形式展示，不过 Domain 层存储时从空间、性能、容错角度出发，经常以**分**为单位，用整型来存储。
