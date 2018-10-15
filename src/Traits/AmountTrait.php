@@ -32,7 +32,7 @@ trait AmountTrait
     public function setAttribute($key, $value)
     {
         if (in_array($key, $this->getAmountFields())) {
-            $value = (int)($value * self::$amountTimes);
+            $value = (int) round($value * self::$amountTimes);
         }
         parent::setAttribute($key, $value);
     }
