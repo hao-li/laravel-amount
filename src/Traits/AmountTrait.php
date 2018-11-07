@@ -47,10 +47,11 @@ trait AmountTrait
         if (property_exists($this, 'amountTimes')) {
             if (is_array($this->amountTimes) && array_key_exists($key, $this->amountTimes)) {
                 $ret = $this->amountTimes[$key];
-            } else if (is_numeric($this->amountTimes)) {
+            } elseif (is_numeric($this->amountTimes)) {
                 $ret = $this->amountTimes;
             }
         }
+
         return $ret;
     }
 }

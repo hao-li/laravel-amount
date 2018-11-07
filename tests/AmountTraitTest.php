@@ -2,8 +2,8 @@
 
 namespace HaoLi\LaravelAmount\Tests;
 
-use HaoLi\LaravelAmount\Traits\AmountTrait;
 use PHPUnit\Framework\TestCase;
+use HaoLi\LaravelAmount\Traits\AmountTrait;
 
 final class AmountTraitTest extends TestCase
 {
@@ -16,7 +16,7 @@ final class AmountTraitTest extends TestCase
     {
         $this->amountTimes = [
             'test1' => 1000,
-            'test2' => 10000
+            'test2' => 10000,
         ];
         $this->assertEquals(1000, $this->getAmountTimes('test1'));
         $this->assertEquals(10000, $this->getAmountTimes('test2'));
@@ -30,7 +30,7 @@ final class AmountTraitTest extends TestCase
         $this->assertEquals(1000, $this->getAmountTimes('test2'));
         $this->assertEquals(1000, $this->getAmountTimes('test3'));
 
-        $this->amountTimes = "1000";
+        $this->amountTimes = '1000';
         $this->assertEquals(1000, $this->getAmountTimes('test1'));
         $this->assertEquals(1000, $this->getAmountTimes('test2'));
         $this->assertEquals(1000, $this->getAmountTimes('test3'));
@@ -38,7 +38,7 @@ final class AmountTraitTest extends TestCase
 
     public function testOtherGetAmountTimes()
     {
-        $this->amountTimes = "a";
+        $this->amountTimes = 'a';
         $this->assertEquals(100, $this->getAmountTimes('test1'));
         $this->assertEquals(100, $this->getAmountTimes('test2'));
         $this->assertEquals(100, $this->getAmountTimes('test3'));
