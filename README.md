@@ -6,6 +6,8 @@
 ## 背景
 系统中涉及到金额的字段，View 层表现的时候一般都是以**元**为单位使用小数形式展示，不过 Domain 层存储时从空间、性能、容错角度出发，经常以**分**为单位，用整型来存储。
 
+> 除了金额外，小数位数固定的**面积**、**长度**等场景使用起来也很方便。
+
 在 Lavarel 中，可以在 Model 中添加属性方法进行转换
 
 ```php
@@ -27,18 +29,17 @@ public function setAmountAttribute($value)
 将转换逻辑封装在 AmountTrait 中，覆写 Model 类的 getMutatedAttributes, mutateAttributeForArray, getAttributeValue 及 setAttribute 方法，当访问相关字段时自动进行转换处理。
 
 ```php
-public static $amountTimes = 100;
-
 public function getMutatedAttributes()
 {
     $attributes = parent::getMutatedAttributes();
+
     return array_merge($attributes, $this->getAmountFields());
 }
 
 protected function mutateAttributeForArray($key, $value)
 {
     return (in_array($key, $this->getAmountFields()))
-        ? $value / self::$amountTimes
+        ? $value / $this->getAmountTimes($key)
         : parent::mutateAttributeForArray($key, $value);
 }
 
@@ -46,7 +47,7 @@ public function getAttributeValue($key)
 {
     $value = parent::getAttributeValue($key);
     if (in_array($key, $this->getAmountFields())) {
-        $value = $value / self::$amountTimes;
+        $value = $value / $this->getAmountTimes($key);
     }
 
     return $value;
@@ -55,7 +56,7 @@ public function getAttributeValue($key)
 public function setAttribute($key, $value)
 {
     if (in_array($key, $this->getAmountFields())) {
-        $value = (int)($value * self::$amountTimes);
+        $value = (int) round($value * $this->getAmountTimes($key));
     }
     parent::setAttribute($key, $value);
 }
@@ -63,6 +64,21 @@ public function setAttribute($key, $value)
 public function getAmountFields()
 {
     return (property_exists($this, 'amountFields')) ? $this->amountFields : [];
+}
+
+public function getAmountTimes($key)
+{
+    $ret = 100;
+
+    if (property_exists($this, 'amountTimes')) {
+        if (is_array($this->amountTimes) && array_key_exists($key, $this->amountTimes)) {
+            $ret = $this->amountTimes[$key];
+        } elseif (is_numeric($this->amountTimes)) {
+            $ret = $this->amountTimes;
+        }
+    }
+
+    return $ret;
 }
 ```
 
@@ -93,8 +109,18 @@ composer require "hao-li/laravel-amount:dev-master"
   ```php
   protected $amountFields = ['amount'];
   ```
-
-4. 完成
+4. 通过 `$amountTimes` 指定金额字段的倍数（可选，默认 100）
+  * 各金额字段使用相同的倍数
+    ```php
+    protected $amountTimes = 100;
+    ```
+  * 不同金额字段设置不同倍数
+    ```php
+    protected $amountTimes = [
+        'amount' => 100,
+    ]
+    ```
+5. 完成
 
   之后读取 amount 字段时，该字段的内容会自动从数据库的**分**转换为**元**，向其赋值时反之从**元**转换为**分**。
 
