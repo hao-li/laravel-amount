@@ -16,7 +16,7 @@ trait AmountTrait
     protected function mutateAttributeForArray($key, $value)
     {
         return (in_array($key, $this->getAmountFields()))
-            ? $value / self::$amountTimes
+            ? $value / $this->getAmountTimes($key)
             : parent::mutateAttributeForArray($key, $value);
     }
 
@@ -24,7 +24,7 @@ trait AmountTrait
     {
         $value = parent::getAttributeValue($key);
         if (in_array($key, $this->getAmountFields())) {
-            $value = $value / self::$amountTimes;
+            $value = $value / $this->getAmountTimes($key);
         }
 
         return $value;
@@ -33,7 +33,7 @@ trait AmountTrait
     public function setAttribute($key, $value)
     {
         if (in_array($key, $this->getAmountFields())) {
-            $value = (int) round($value * self::$amountTimes);
+            $value = (int)round($value * $this->getAmountTimes($key));
         }
         parent::setAttribute($key, $value);
     }
@@ -41,5 +41,17 @@ trait AmountTrait
     public function getAmountFields()
     {
         return (property_exists($this, 'amountFields')) ? $this->amountFields : [];
+    }
+
+    public function getAmountTimes($key)
+    {
+        if (is_array(self::$amountTimes) && array_key_exists($key, self::$amountTimes)) {
+            $ret = self::$amountTimes[$key];
+        } else if (is_numeric(self::$amountTimes)) {
+            $ret = self::$amountTimes;
+        } else {
+            $ret = 100;
+        }
+        return $ret;
     }
 }
