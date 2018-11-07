@@ -14,5 +14,8 @@
             "name": "hao li",
             "email": "haoli.sand@gmail.com"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^7"
+    }
 }
