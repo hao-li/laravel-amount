@@ -4,8 +4,6 @@ namespace HaoLi\LaravelAmount\Traits;
 
 trait AmountTrait
 {
-    public static $amountTimes = 100;
-
     public function getMutatedAttributes()
     {
         $attributes = parent::getMutatedAttributes();
@@ -45,12 +43,14 @@ trait AmountTrait
 
     public function getAmountTimes($key)
     {
-        if (is_array(self::$amountTimes) && array_key_exists($key, self::$amountTimes)) {
-            $ret = self::$amountTimes[$key];
-        } elseif (is_numeric(self::$amountTimes)) {
-            $ret = self::$amountTimes;
-        } else {
-            $ret = 100;
+        $ret = 100;
+
+        if (property_exists($this, 'amountTimes')) {
+            if (is_array($this->amountTimes) && array_key_exists($key, $this->amountTimes)) {
+                $ret = $this->amountTimes[$key];
+            } elseif (is_numeric($this->amountTimes)) {
+                $ret = $this->amountTimes;
+            }
         }
 
         return $ret;

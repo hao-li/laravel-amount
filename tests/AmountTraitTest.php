@@ -10,10 +10,11 @@ final class AmountTraitTest extends TestCase
     use AmountTrait;
 
     protected $amountFields = ['test1', 'test2', 'test3'];
+    protected $amountTimes;
 
     public function testArrayGetAmountTimes()
     {
-        self::$amountTimes = [
+        $this->amountTimes = [
             'test1' => 1000,
             'test2' => 10000,
         ];
@@ -24,12 +25,12 @@ final class AmountTraitTest extends TestCase
 
     public function testNumericGetAmountTimes()
     {
-        self::$amountTimes = 1000;
+        $this->amountTimes = 1000;
         $this->assertEquals(1000, $this->getAmountTimes('test1'));
         $this->assertEquals(1000, $this->getAmountTimes('test2'));
         $this->assertEquals(1000, $this->getAmountTimes('test3'));
 
-        self::$amountTimes = '1000';
+        $this->amountTimes = '1000';
         $this->assertEquals(1000, $this->getAmountTimes('test1'));
         $this->assertEquals(1000, $this->getAmountTimes('test2'));
         $this->assertEquals(1000, $this->getAmountTimes('test3'));
@@ -37,12 +38,12 @@ final class AmountTraitTest extends TestCase
 
     public function testOtherGetAmountTimes()
     {
-        self::$amountTimes = 'a';
+        $this->amountTimes = 'a';
         $this->assertEquals(100, $this->getAmountTimes('test1'));
         $this->assertEquals(100, $this->getAmountTimes('test2'));
         $this->assertEquals(100, $this->getAmountTimes('test3'));
 
-        self::$amountTimes = null;
+        $this->amountTimes = null;
         $this->assertEquals(100, $this->getAmountTimes('test1'));
         $this->assertEquals(100, $this->getAmountTimes('test2'));
         $this->assertEquals(100, $this->getAmountTimes('test3'));
