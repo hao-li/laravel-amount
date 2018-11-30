@@ -61,7 +61,7 @@ trait AmountTrait
         $value = $value / $this->getAmountTimes($key);
 
         if (isset($this->isSprintf) && true == $this->isSprintf) {
-            $value = sprintf("%.2f",$value);
+            $value = sprintf("%.2f", $value);
         }
 
         return $value;
