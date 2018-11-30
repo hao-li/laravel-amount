@@ -14,7 +14,7 @@ trait AmountTrait
     protected function mutateAttributeForArray($key, $value)
     {
         return (in_array($key, $this->getAmountFields()))
-            ? $value / $this->getAmountTimes($key)
+            ? $this->getAmountValue($key, $value)
             : parent::mutateAttributeForArray($key, $value);
     }
 
@@ -22,7 +22,7 @@ trait AmountTrait
     {
         $value = parent::getAttributeValue($key);
         if (in_array($key, $this->getAmountFields())) {
-            $value = $value / $this->getAmountTimes($key);
+            $value = $this->getAmountValue($key, $value);
         }
 
         return $value;
@@ -54,5 +54,16 @@ trait AmountTrait
         }
 
         return $ret;
+    }
+
+    protected function getAmountValue($key,$value)
+    {
+        $value = $value / $this->getAmountTimes($key);
+
+        if(isset($this->isSprintf) && true == $this->isSprintf) {
+            $value = sprintf("%.2f",$value);
+        }
+
+        return $value;
     }
 }
