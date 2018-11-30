@@ -60,10 +60,19 @@ trait AmountTrait
     {
         $value = $value / $this->getAmountTimes($key);
 
-        if (! empty($this->amountFormat)) {
-            $value = sprintf($this->amountFormat, $value);
+        if (property_exists($this, 'amountFormats')) {
+            if (is_array($this->amountFormats) && array_key_exists($key, $this->amountFormats)) {
+                $value = $this->getFloatValue($this->amountFormats[$key], $value);
+            } elseif (is_numeric($this->amountFormats)) {
+                $value = $this->getFloatValue($this->amountFormats, $value);
+            }
         }
 
         return $value;
+    }
+
+    protected function getFloatValue($num, $value)
+    {
+        return sprintf('%.'.$num.'f', $value);
     }
 }
