@@ -56,11 +56,11 @@ trait AmountTrait
         return $ret;
     }
 
-    protected function getAmountValue($key,$value)
+    protected function getAmountValue($key, $value)
     {
         $value = $value / $this->getAmountTimes($key);
 
-        if(isset($this->isSprintf) && true == $this->isSprintf) {
+        if (isset($this->isSprintf) && true == $this->isSprintf) {
             $value = sprintf("%.2f",$value);
         }
 
