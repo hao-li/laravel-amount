@@ -21,7 +21,7 @@ trait AmountTrait
     public function getAttributeValue($key)
     {
         $value = parent::getAttributeValue($key);
-        if (in_array($key, $this->getAmountFields())) {
+        if (is_numeric($value) && in_array($key, $this->getAmountFields())) {
             $value = $value / $this->getAmountTimes($key);
         }
 
@@ -30,7 +30,7 @@ trait AmountTrait
 
     public function setAttribute($key, $value)
     {
-        if (in_array($key, $this->getAmountFields())) {
+        if (is_numeric($value) && in_array($key, $this->getAmountFields())) {
             $value = (int) round($value * $this->getAmountTimes($key));
         }
         parent::setAttribute($key, $value);
